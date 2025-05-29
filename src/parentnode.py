@@ -6,14 +6,10 @@ class ParentNode(HTMLNode):
 
     def to_html(self):
         if not self.tag:
-            raise ValueError
+            raise ValueError("ParentNode must contain a tag")
         if self.children is None:
             raise ValueError("HTMLNode list cannot be None or empty")
         result = ""
         for child in self.children:
-            if type(child) is list:
-                for item in child:
-                    result += item.to_html()
-            else:
-                result += child.to_html()       
+            result += child.to_html()       
         return f"<{self.tag}{self.props_to_html()}>{result}</{self.tag}>"

@@ -34,19 +34,25 @@ class TestParentNode(unittest.TestCase):
         parent_node = ParentNode("div", [])
         parent_node2 = ParentNode("div", None)
         self.assertEqual(parent_node.to_html(), "<div></div>")
-        with self.assertRaises(ValueError) as e:
+        with self.assertRaises(ValueError,) as e:
             parent_node2.to_html()
-            self.assertEqual(e, "HTMLNode list cannot be None or empty")
+        err_msg = e
+        self.assertEqual(str(err_msg.exception), "HTMLNode list cannot be None or empty")
+        self.assertNotEqual(str(err_msg.exception), "ParentNode must contain a tag")
 
     def test_to_html_empty_tag(self):
         parent_node = ParentNode("", [])
         parent_node2 = ParentNode(None, [])
         with self.assertRaises(ValueError) as e:
             parent_node.to_html()
-            self.assertEqual(e, "")
+        err_msg = e
+        self.assertEqual(str(err_msg.exception), "ParentNode must contain a tag")
+        self.assertNotEqual(str(err_msg.exception), "HTMLNode list cannot be None or empty")
         with self.assertRaises(ValueError) as e:
             parent_node2.to_html()
-            self.assertEqual(e, "HTMLNode list cannot be None or empty")
+        err_msg = e
+        self.assertEqual(str(err_msg.exception), "ParentNode must contain a tag")
+        self.assertNotEqual(str(err_msg.exception), "HTMLNode list cannot be None or empty")
 
     def test_to_html_nested_children(self):
         nested_children = [
@@ -54,7 +60,7 @@ class TestParentNode(unittest.TestCase):
             LeafNode("b", "Bolded text"),
             LeafNode("i", "Italic text")
         ]
-        parent_node = ParentNode("div", [nested_children])
+        parent_node = ParentNode("div", nested_children)
         self.assertEqual(
             parent_node.to_html(),
             "<div><p>Some text</p><b>Bolded text</b><i>Italic text</i></div>"
@@ -66,7 +72,7 @@ class TestParentNode(unittest.TestCase):
             LeafNode("b", "Bolded text"),
             LeafNode("i", "Italic text")
         ]
-        grandchild_node = ParentNode("p", [nested_children])
+        grandchild_node = ParentNode("p", nested_children)
         child_node = ParentNode("span", [grandchild_node])
         parent_node = ParentNode("div", [child_node])
         self.assertEqual(
