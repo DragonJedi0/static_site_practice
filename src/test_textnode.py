@@ -128,6 +128,57 @@ class TestTextNode(unittest.TestCase):
         err_msg = e.exception
         self.assertEqual(str(err_msg), "Cannot Convert: Not a valid TextType")
 
+    # Testing split_nodes_delimiter()
+    def test_bold(self):
+        node = TextNode("This text has a **bolded** word", TextType.TEXT)
+        expected_list = [
+            TextNode("This text has a ", TextType.TEXT),
+            TextNode("bolded", TextType.BOLD),
+            TextNode(" word", TextType.TEXT),
+        ]
+        node_list = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(node_list, expected_list)
+
+    def test_italic(self):
+        node = TextNode("This text has an _italicized_ word", TextType.TEXT)
+        expected_list = [
+            TextNode("This text has an ", TextType.TEXT),
+            TextNode("italicized", TextType.ITALIC),
+            TextNode(" word", TextType.TEXT),
+        ]
+        node_list = split_nodes_delimiter([node], "_", TextType.ITALIC)
+        self.assertEqual(node_list, expected_list)
+
+    def test_code(self):
+        node = TextNode("This `code` is a test", TextType.TEXT)
+        expected_list = [
+            TextNode("This ", TextType.TEXT),
+            TextNode("code", TextType.CODE),
+            TextNode(" is a test", TextType.TEXT),
+        ]
+        node_list = split_nodes_delimiter([node], "`", TextType.CODE)
+        self.assertEqual(node_list, expected_list)
+
+    def test_multiline_code(self):
+        node = TextNode("This code has multiple lines ```code\ncode\ncode```", TextType.TEXT)
+        expected_list = [
+            TextNode("This code has multiple lines ", TextType.TEXT),
+            TextNode("code\ncode\ncode", TextType.CODE),
+            TextNode("", TextType.TEXT),
+        ]
+        wrong_delimiter = [
+            TextNode("This code has multiple lines ", TextType.TEXT),
+            TextNode("", TextType.CODE),
+            TextNode("", TextType.TEXT),
+            TextNode("code\ncode\ncode", TextType.CODE),
+            TextNode("", TextType.TEXT),
+            TextNode("", TextType.CODE),
+            TextNode("", TextType.TEXT),
+        ]
+        node_list = split_nodes_delimiter([node], "```", TextType.CODE)
+        self.assertEqual(node_list, expected_list)
+        self.assertNotEqual(node_list, wrong_delimiter)
+
 
 if __name__ == "__main__":
     unittest.main()
