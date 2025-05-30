@@ -37,7 +37,7 @@ class TestParentNode(unittest.TestCase):
         with self.assertRaises(ValueError,) as e:
             parent_node2.to_html()
         err_msg = e
-        self.assertEqual(str(err_msg.exception), "HTMLNode list cannot be None or empty")
+        self.assertEqual(str(err_msg.exception), "HTMLNode list cannot be None")
         self.assertNotEqual(str(err_msg.exception), "ParentNode must contain a tag")
 
     def test_to_html_empty_tag(self):
@@ -47,12 +47,12 @@ class TestParentNode(unittest.TestCase):
             parent_node.to_html()
         err_msg = e
         self.assertEqual(str(err_msg.exception), "ParentNode must contain a tag")
-        self.assertNotEqual(str(err_msg.exception), "HTMLNode list cannot be None or empty")
+        self.assertNotEqual(str(err_msg.exception), "HTMLNode list cannot be None")
         with self.assertRaises(ValueError) as e:
             parent_node2.to_html()
         err_msg = e
         self.assertEqual(str(err_msg.exception), "ParentNode must contain a tag")
-        self.assertNotEqual(str(err_msg.exception), "HTMLNode list cannot be None or empty")
+        self.assertNotEqual(str(err_msg.exception), "HTMLNode list cannot be None")
 
     def test_to_html_nested_children(self):
         nested_children = [

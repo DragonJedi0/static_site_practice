@@ -23,8 +23,7 @@ class TestLeafNode(unittest.TestCase):
         node2 = LeafNode("p", "")
         node3 = LeafNode("p", None)
         self.assertEqual(node.to_html(), "<p>Hello World!</p>")
-        with self.assertRaises(ValueError):
-            node2.to_html()
+        self.assertEqual(node2.to_html(), "<p></p>")
         with self.assertRaises(ValueError):
             node3.to_html()
     
