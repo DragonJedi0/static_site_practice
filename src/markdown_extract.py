@@ -50,19 +50,29 @@ def split_nodes_images(old_nodes):
     new_nodes = []
     for node in old_nodes:
         if node.text_type.value == "text":
+            # Check if extract function finds anything to extract, otherwise add node as is
             if not extract_markdown_images(node.text):
                 new_nodes.append(node)
                 continue
             else:
+                # Cycle through each node's text and split into three parts.
+                # Before, Splitter, and After
                 current_text = node.text
                 while(extract_markdown_images(current_text)):
+                    # Store the first element's tupple into text and url variables
                     image_alt, image_link = extract_markdown_images(current_text)[0]
+                    # Split and store data
                     text_before, text_after = current_text.split(f"![{image_alt}]({image_link})")
+                    
+                    # Add Text TextNode
                     if text_before:
                         new_nodes.append(TextNode(text_before, TextType.TEXT))
+                    # Add Image TextNode
                     new_nodes.append(TextNode(image_alt, TextType.IMAGE, image_link))
+                    # Add Text After if applicable
                     if text_after and not extract_markdown_images(text_after):
                         new_nodes.append(TextNode(text_after, TextType.TEXT))
+                    # Check rest remaining text
                     current_text = text_after
         else:
             new_nodes.append(node)
@@ -89,3 +99,11 @@ def split_nodes_links(old_nodes):
         else:
             new_nodes.append(node)
     return new_nodes
+
+def text_to_textnodes(text):
+    node = TextNode(text, TextType.TEXT)
+    bold_list = split_nodes_delimiter([node], "**", TextType.BOLD)
+    italic_list = split_nodes_delimiter(bold_list, "_", TextType.ITALIC)
+    code_list = split_nodes_delimiter(italic_list, "`", TextType.CODE)
+    link_list = split_nodes_links(code_list)
+    return split_nodes_images(link_list)

@@ -387,15 +387,8 @@ class TestTextNode(unittest.TestCase):
         )
 
     def test_all_splits(self):
-        node = TextNode(
-            "This sentence has all markdown types thus far. **Bolded** words. _Italics_. `Example Code`. An ![image](https://i.imgur.com/123.png), and a [link](https://www.google.com)",
-            TextType.TEXT
-        )
-        bold_list = split_nodes_delimiter([node], "**", TextType.BOLD)
-        italic_list = split_nodes_delimiter(bold_list, "_", TextType.ITALIC)
-        code_list = split_nodes_delimiter(italic_list, "`", TextType.CODE)
-        link_list = split_nodes_links(code_list)
-        new_nodes = split_nodes_images(link_list)
+        text ="This sentence has all markdown types thus far. **Bolded** words. _Italics_. `Example Code`. An ![image](https://i.imgur.com/123.png), and a [link](https://www.google.com)"
+        new_nodes = text_to_textnodes(text)
         self.assertListEqual(
             [
                 TextNode("This sentence has all markdown types thus far. ", TextType.TEXT),
