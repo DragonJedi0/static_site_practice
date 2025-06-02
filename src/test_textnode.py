@@ -1,7 +1,7 @@
 import unittest
 
-from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter
-
+from textnode import TextNode, TextType, text_node_to_html_node
+from markdown_extract import *
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -219,6 +219,78 @@ class TestTextNode(unittest.TestCase):
         ]
         node_list = split_nodes_delimiter([node, node2], "**", TextType.BOLD)
         self.assertEqual(node_list, expected_list)
+
+    # Testing extract_markdown_images()
+    def test_extract_markdown_images(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_no_match(self):
+        matches = extract_markdown_images(
+            "This is text with an ![image=https://i.imgur.com/zjjcJKZ.png]"
+        )
+        self.assertListEqual([], matches)
+
+    def test_multiple_images(self):
+        matches = extract_markdown_images(
+            "The first image is a ![elephant](https://elephant.img) and the second is a ![dog](https://dog.img)"
+        )
+        self.assertListEqual([
+            ("elephant", "https://elephant.img"),
+            ("dog", "https://dog.img"),
+        ], matches)
+
+    def test_no_image(self):
+        matches = extract_markdown_images("Nothing here")
+        self.assertListEqual([],matches)
+
+    # Testing extract_markdown_links()
+    def test_extract_markdown_links(self):
+        matches = extract_markdown_links(
+            "This is text with a [link](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("link", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_no_match(self):
+        matches = extract_markdown_links(
+            "This is text with a [link=https://i.imgur.com/zjjcJKZ.png]"
+        )
+        self.assertListEqual([], matches)
+
+    def test_multiple_links(self):
+        matches = extract_markdown_links(
+            "The first link is a [elephant](https://elephant.img) and the second is a [dog](https://dog.img)"
+        )
+        self.assertListEqual([
+            ("elephant", "https://elephant.img"),
+            ("dog", "https://dog.img"),
+        ], matches)
+
+    def test_no_link(self):
+        matches = extract_markdown_links("Nothing here")
+        self.assertListEqual([],matches)
+
+    # Testing split_node_images
+    def test_split_images(self):
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_images([node])
+        print(new_nodes)
+        # self.assertListEqual(
+        #     [
+        #         TextNode("This is text with an ", TextType.TEXT),
+        #         TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+        #         TextNode(" and another ", TextType.TEXT),
+        #         TextNode(
+        #             "second image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"
+        #         ),
+        #     ],
+        #     new_nodes,
+        # )
 
 
 if __name__ == "__main__":
