@@ -164,20 +164,61 @@ class TestTextNode(unittest.TestCase):
         expected_list = [
             TextNode("This code has multiple lines ", TextType.TEXT),
             TextNode("code\ncode\ncode", TextType.CODE),
-            TextNode("", TextType.TEXT),
         ]
-        wrong_delimiter = [
-            TextNode("This code has multiple lines ", TextType.TEXT),
-            TextNode("", TextType.CODE),
-            TextNode("", TextType.TEXT),
-            TextNode("code\ncode\ncode", TextType.CODE),
-            TextNode("", TextType.TEXT),
-            TextNode("", TextType.CODE),
-            TextNode("", TextType.TEXT),
-        ]
-        node_list = split_nodes_delimiter([node], "```", TextType.CODE)
+        node_list = split_nodes_delimiter([node], "`", TextType.CODE)
         self.assertEqual(node_list, expected_list)
-        self.assertNotEqual(node_list, wrong_delimiter)
+
+    def test_mismatch(self):
+        node = TextNode("This `code` is a test", TextType.TEXT)
+        with self.assertRaises(TypeError):
+            split_nodes_delimiter([node], "**", TextType.CODE)
+
+    def test_bad_delimiter(self):
+        node = TextNode("This `code is a test", TextType.TEXT)
+        with self.assertRaises(Exception):
+            split_nodes_delimiter([node], "`", TextType.CODE)
+
+    def test_multi_delimiter(self):
+        node = TextNode("This text has **two** bolded **words** here", TextType.TEXT)
+        expected_list = [
+            TextNode("This text has ", TextType.TEXT),
+            TextNode("two", TextType.BOLD),
+            TextNode(" bolded ", TextType.TEXT),
+            TextNode("words", TextType.BOLD),
+            TextNode(" here", TextType.TEXT),
+        ]
+        node_list = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(node_list, expected_list)
+
+    def test_trailing_delimiter(self):
+        node = TextNode("This text ends with a bolded **word**", TextType.TEXT)
+        expected_list = [
+            TextNode("This text ends with a bolded ", TextType.TEXT),
+            TextNode("word", TextType.BOLD),
+        ]
+        node_list = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(node_list, expected_list)
+
+    def test_preceeding_delimiter(self):
+        node = TextNode("**Shout** starts bolded", TextType.TEXT)
+        expected_list = [
+            TextNode("Shout", TextType.BOLD),
+            TextNode(" starts bolded", TextType.TEXT),
+        ]
+        node_list = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(node_list, expected_list)
+
+    def test_multi_node(self):
+        node = TextNode("This text only has one **bolded** word", TextType.TEXT)
+        node2 = TextNode("There is an empty bolded word at the end ****", TextType.TEXT)
+        expected_list = [
+            TextNode("This text only has one ", TextType.TEXT),
+            TextNode("bolded", TextType.BOLD),
+            TextNode(" word", TextType.TEXT),
+            TextNode("There is an empty bolded word at the end ", TextType.TEXT),
+        ]
+        node_list = split_nodes_delimiter([node, node2], "**", TextType.BOLD)
+        self.assertEqual(node_list, expected_list)
 
 
 if __name__ == "__main__":
