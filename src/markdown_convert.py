@@ -107,3 +107,12 @@ def text_to_textnodes(text):
     code_list = split_nodes_delimiter(italic_list, "`", TextType.CODE)
     link_list = split_nodes_links(code_list)
     return split_nodes_images(link_list)
+
+def markdown_to_blocks(markdown):
+    outer_list = markdown.split("\n\n")
+    block_list = []
+    for item in outer_list:
+        block ="\n".join(list(map(lambda block: block.strip(), item.split("\n"))))
+        if block:
+            block_list.append(block.strip("\n"))
+    return block_list
