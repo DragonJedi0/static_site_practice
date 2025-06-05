@@ -10,69 +10,31 @@ class BlockType(Enum):
     ORDERED = "ordered_list"
 
 
-def block_to_block_type(markdown_block):
-    if markdown_block:
-        item_list = markdown_block.split("\n")
-        for block_type in BlockType:
-            item_check = []
-            match block_type:
-                case BlockType.HEADING:
-                    # Heading
-                    if re.findall(r"^(#){1,6} ", markdown_block):
-                        return block_type
-                case BlockType.CODEBLOCK:
-                    # Code Block
-                    if re.findall(r"^```[\s\S]*```$", markdown_block):
-                        return block_type
-                case BlockType.QUOTE:
-                    # Quote
-                    regex = r"^>"
-                    if len(item_list) > 1:
-                        for block in item_list:
-                            if block:
-                                if re.findall(regex, block):
-                                    item_check.append(True)
-                                else:
-                                    item_check.append(False)
-                        if not False in item_check:
-                            return block_type
-                    else:
-                        if re.findall(regex, markdown_block):
-                            return block_type
-                case BlockType.UNORDERED:
-                    # Unordered List
-                    regex = r"^- "
-                    if len(item_list) > 1:
-                        for block in item_list:
-                            if block:
-                                if re.findall(regex, block):
-                                    item_check.append(True)
-                                else:
-                                    item_check.append(False)
-                        if not False in item_check:
-                            return block_type
-                    else:
-                        if re.findall(regex, markdown_block):
-                            return block_type
-                case BlockType.ORDERED:
-                    # Ordered
-                    i = 1
-                    regex = f"{i}\\. "
-                    if len(item_list) > 1:
-                        for block in item_list:
-                            if block:
-                                if re.findall(regex, block):
-                                    item_check.append(True)
-                                else:
-                                    item_check.append(False)
-                                i += 1
-                                regex = f"{i}\\. "
-                        if not False in item_check:
-                            return block_type
-                    else:
-                        if re.findall(r"^1\. ", markdown_block):
-                            return block_type
+def block_to_block_type(block):
+    if not block is None:
+        lines = block.split("\n")
 
+        if block.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")):
+            return BlockType.HEADING
+        if len(lines) > 1 and lines[0].startswith("```") and lines[-1].startswith("```"):
+            return BlockType.CODEBLOCK
+        if block.startswith(">"):
+            for line in lines:
+                if not line.startswith(">"):
+                    return BlockType.PARAGRAPH
+            return BlockType.QUOTE
+        if block.startswith("- "):
+            for line in lines:
+                if not line.startswith("- "):
+                    return BlockType.PARAGRAPH
+            return BlockType.UNORDERED
+        if block.startswith("1. "):
+            i = 1
+            for line in lines:
+                if not line.startswith(f"{i}. "):
+                    return BlockType.PARAGRAPH
+                i += 1
+            return BlockType.ORDERED
         return BlockType.PARAGRAPH
     else:
-        raise Exception("Markdown block cannot be None or empty")
+        raise Exception("Markdown block cannot be None")
