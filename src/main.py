@@ -27,11 +27,34 @@ def extract_title(markdown):
     node = markdown_to_html_node(blocks[0])
     header = node.children[0]
     if header.tag == "h1":
-        return header
+        return header.value
     else:
         raise Exception("No Title found in markdown provided")
-    
 
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    # Load markdown file in from_path
+    markdown_file = open(from_path)
+    markdown = markdown_file.read()
+    markdown_file.close()
+    # Load template file in template_path
+    template_file = open(template_path)
+    template = template_file.read()
+    template_file.close()
+    # Convert markdown to html
+    html = markdown_to_html_node(markdown).to_html()
+    title = extract_title(markdown)
+    # Replace {{ Title }} and {{ Content }}
+    new_html = template.replace("{{ Title }}", title)
+    new_html = new_html.replace("{{ Content }}", html)
+    # Write a new html file at dest_path
+    if os.path.exists(dest_path):
+        new_html_file = open(dest_path)
+        new_html_file.write(new_html)
+    else:
+        new_html_file = open(dest_path, "x")
+        new_html_file.write(new_html)
+        new_html_file.close()
 
 def main():
     if os.path.exists("public/"):
@@ -44,6 +67,7 @@ def main():
         print("Directory static/ not found...\nExiting...")
         exit(1)
 
+    generate_page("content/index.md", "template.html", "public/index.html")
 
 if __name__ == "__main__":
     main()
