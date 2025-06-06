@@ -46,7 +46,6 @@ def block_to_block_type(block):
 def markdown_to_html_node(markdown):
     child_nodes = []
     block_list = markdown_to_blocks(markdown)
-    # print(block_list)
 
     def decorate_header(text):
         text_list = text.split("\n")

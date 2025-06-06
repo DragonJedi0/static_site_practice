@@ -352,11 +352,17 @@ But the last line is not formatted correctly
 
         node = markdown_to_html_node(md)
         html = node.to_html()
-        print("Expected:")
-        print("<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>")
-        print("Actual:")
-        print(html)
         self.assertEqual(
             html,
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
+
+
+    def test_bad_codeblocks(self):
+        md = """
+        ```This is text that _should_ remain
+        the **same** even with inline stuff
+        `
+        """
+        with self.assertRaises(Exception):
+            markdown_to_html_node(md)

@@ -1,9 +1,48 @@
-from textnode import TextType, TextNode
+import os
+import shutil
+from markdown_convert import markdown_to_blocks
+from markdownblock import markdown_to_html_node
+
+def copy_static_to_public(source_dir_path, dest_dir_path):
+    # Get a list of items in the source directory
+    contents = os.listdir(source_dir_path)
+
+    for object in contents:
+        # Build the full source path for the item
+        current_path = os.path.join(source_dir_path, object)
+        # Build the corresponding destination path for the item
+        dest_object_path = os.path.join(dest_dir_path, object)
+
+        if os.path.isfile(current_path):
+            print(f"Copying {current_path} to {dest_object_path}...")
+            shutil.copy(current_path, dest_object_path)
+        elif os.path.isdir(current_path):
+            # Create the corresponding directory in the destination
+            os.mkdir(dest_object_path)
+            # Recursively call the function for the subdirectory
+            copy_static_to_public(current_path, dest_object_path)
+
+def extract_title(markdown):
+    blocks = markdown_to_blocks(markdown)
+    node = markdown_to_html_node(blocks[0])
+    header = node.children[0]
+    if header.tag == "h1":
+        return header
+    else:
+        raise Exception("No Title found in markdown provided")
+    
+
 
 def main():
-    text_object = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-
-    print(text_object.__repr__())
+    if os.path.exists("public/"):
+        shutil.rmtree("public/")
+    os.mkdir("public/")
+    if os.path.exists("static/"):
+        print("Copying files from static to public...\n")
+        copy_static_to_public("static/", "public/")
+    else:
+        print("Directory static/ not found...\nExiting...")
+        exit(1)
 
 
 if __name__ == "__main__":
