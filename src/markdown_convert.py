@@ -109,10 +109,13 @@ def text_to_textnodes(text):
     return split_nodes_images(link_list)
 
 def markdown_to_blocks(markdown):
-    outer_list = markdown.split("\n\n")
-    block_list = []
-    for item in outer_list:
-        block ="\n".join(list(map(lambda block: block.strip(), item.split("\n"))))
-        if block:
-            block_list.append(block.strip("\n"))
-    return block_list
+    if not markdown is None:
+        outer_list = markdown.split("\n\n")
+        block_list = []
+        for item in outer_list:
+            block ="\n".join(list(map(lambda block: block.strip(), item.split("\n"))))
+            if block:
+                block_list.append(block.strip("\n"))
+        return block_list
+    else:
+        raise Exception("no markdown text provided")
