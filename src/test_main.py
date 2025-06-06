@@ -1,9 +1,9 @@
 import unittest
 
-from main import extract_title
+from gencontent import extract_title
 
 
-class TestMain(unittest.TestCase):
+class TestGenContent(unittest.TestCase):
     def test_extract_title(self):
         markdown = "# Hello There\n\n## The many phrases of Obi-wan Kenobi"
         header = extract_title(markdown)
