@@ -51,3 +51,24 @@ def generate_page(from_path, template_path, dest_path):
     new_html_file = open(dest_path, "w")
     new_html_file.write(new_html)
     new_html_file.close()
+
+def generate_pages_recursive(content_path, template_path, dest_path):
+    # Get a list of items in the source directory
+    contents = os.listdir(content_path)
+
+    for object in contents:
+        # Build the full source path for the item
+        current_path = os.path.join(content_path, object)
+        # Build the corresponding destination path for the item
+        dest_object_path = os.path.join(dest_path, object)
+
+        if os.path.isfile(current_path) and object.endswith(".md"):
+            dest_html_path = os.path.join(dest_path, object.replace(".md", ".html"))
+            generate_page(current_path, template_path, dest_html_path)
+        elif os.path.isfile(current_path):
+            shutil.copy(current_path, dest_object_path)
+        elif os.path.isdir(current_path):
+            # Create the corresponding directory in the destination
+            os.mkdir(dest_object_path)
+            # Recursively call the function for the subdirectory
+            generate_pages_recursive(current_path, template_path, dest_object_path)
