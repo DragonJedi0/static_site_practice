@@ -9,10 +9,11 @@ dir_path_content = "./content"
 template_path = "./template.html"
 
 def main():
-    if sys.argv[0]:
-        basepath = sys.argv[0]
+    if sys.argv[1]:
+        basepath = sys.argv[1]
     else:
         basepath = "/"
+    print(basepath)
     if os.path.exists(dir_path_public):
         shutil.rmtree(dir_path_public)
     os.mkdir(dir_path_public)
