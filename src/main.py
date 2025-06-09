@@ -4,7 +4,7 @@ import sys
 from gencontent import copy_static_to_public, generate_pages_recursive
 
 dir_path_static = "./static"
-dir_path_public = "./doc"
+dir_path_public = "./docs"
 dir_path_content = "./content"
 template_path = "./template.html"
 
