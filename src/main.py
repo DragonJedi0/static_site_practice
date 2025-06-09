@@ -9,14 +9,14 @@ dir_path_content = "./content"
 template_path = "./template.html"
 
 def main():
-    if sys.argv[1]:
+    basepath = "/"
+    if len(sys.argv) > 1:
         basepath = sys.argv[1]
-    else:
-        basepath = "/"
-    print(basepath)
+
     if os.path.exists(dir_path_public):
         shutil.rmtree(dir_path_public)
     os.mkdir(dir_path_public)
+
     if os.path.exists(dir_path_static):
         print("Copying files from static to public...\n")
         copy_static_to_public(dir_path_static, dir_path_public)

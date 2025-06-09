@@ -1,1 +1,1 @@
-python3 src/main.py "https://github.com/DragonJedi0/static_site_practice/docs/" 
+python3 src/main.py "/static_site_practice/" 
